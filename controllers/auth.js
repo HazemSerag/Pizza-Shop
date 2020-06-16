@@ -114,21 +114,22 @@ exports.login = (req, res, next) => {
 
 exports.logout = (req, res, next) => {
     const userId = req.body.userId;
-    User.findOne({
-            "_id": userId
-        })
+    User.findOne({"_id": userId})
         .then(user => {
-            user.storeCartItems(req.session.cart.items)
-        }).then(() => {
-
-            return req.session.destroy();
-
-        }).then(() => {
-            res.send({
-                msg: 'Logged Out',
-                success: true
-            })
+           return user.storeCartItems(req.session.cart.items)
+        })
+        .then(() => {
+            delete req.session.userId;
+            req.session.cart.items=[];
+            req.session.save((err)=>{
+                res.send({
+                    msg: 'Logged Out',
+                    success: true
+                })
+            })  
         }).catch(err => {
             console.log(err)
         })
+
+
 }

@@ -73,7 +73,7 @@ exports.removeFromCart = (req, res, next) => {
     const updatedItems = helperFunctions.deleteCartItem(req.session.cart, prodId);
     req.session.cart.items = updatedItems
     if(req.session.userId){
-        User.findOne({_id:req.session.userId})
+      return  User.findOne({_id:req.session.userId})
         .then(user=>{
            return user.storeCartItems(updatedItems)
         }).then(()=>{

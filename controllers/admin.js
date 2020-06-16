@@ -72,6 +72,19 @@ exports.removeFromCart = (req, res, next) => {
     const prodId = req.body.productId
     const updatedItems = helperFunctions.deleteCartItem(req.session.cart, prodId);
     req.session.cart.items = updatedItems
+    if(req.session.userId){
+        User.findOne({_id:req.session.userId})
+        .then(user=>{
+           return user.storeCartItems(updatedItems)
+        }).then(()=>{
+            res.send({
+                msg: "Removed",
+                success: true
+            })
+        }).catch(err=>{
+            console.log(err)
+        })
+    }
     res.send({
         msg: "Removed",
         success: true
@@ -80,11 +93,26 @@ exports.removeFromCart = (req, res, next) => {
 
 exports.updateCart = (req, res, next) => {
     const updatedCartItems = req.body;
-    req.session.cart.items = updatedCartItems;
-    res.send({
-        msg: "cart updated",
-        success: true
-    })
+    if(req.session.userId){
+        User.findOne({_id:req.session.userId})
+        .then(user=>{
+           return user.storeCartItems(updatedCartItems)
+        }).then(()=>{
+            res.send({
+                msg: "cart updated",
+                success: true
+            })
+        }).catch(err=>{
+            console.log(err)
+        })
+    }else{
+        req.session.cart.items = updatedCartItems;
+        res.send({
+            msg: "cart updated",
+            success: true
+        })
+    }
+
 }
 
 exports.getOrders = (req, res, next) => {

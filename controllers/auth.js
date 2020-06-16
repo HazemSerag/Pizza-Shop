@@ -56,8 +56,6 @@ exports.signUp = (req, res, next) => {
                         from: 'pizzaShop@delivery.com',
                         subject: 'Signup Succeeded!',
                         html: '<h1>Welcome to Pizza Shop family!</h1>'
-                    }).catch(err => {
-                        console.log(err)
                     })
                 })
         }).catch(err => {
@@ -110,23 +108,23 @@ exports.login = (req, res, next) => {
         })
 
 }
-
-
 exports.logout = (req, res, next) => {
     const userId = req.body.userId;
-    User.findOne({"_id": userId})
+    User.findOne({
+            "_id": userId
+        })
         .then(user => {
-           return user.storeCartItems(req.session.cart.items)
+            return user.storeCartItems(req.session.cart.items)
         })
         .then(() => {
             delete req.session.userId;
-            req.session.cart.items=[];
-            req.session.save((err)=>{
+            req.session.cart.items = [];
+            req.session.save((err) => {
                 res.send({
                     msg: 'Logged Out',
                     success: true
                 })
-            })  
+            })
         }).catch(err => {
             console.log(err)
         })
